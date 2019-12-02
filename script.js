@@ -73,6 +73,7 @@ const operate = (operand, a, b) => {
 let buffer = [0];
 
 const addToBuffer = (input) => {
+  // ToDo: check if input & output is a finite number
   if (isNaN(input)) {
     // handle operands
   } else {
@@ -87,7 +88,11 @@ const addToBuffer = (input) => {
 }
 
 const refreshScreen = () => {
-  output.innerText = buffer.join('')
+  let result = buffer.join('')
+  if (result.length > 10) {
+    result = parseInt(result).toExponential(5)
+  }
+  output.innerText = result
 }
 
 const handleInput = (e) => {
@@ -133,4 +138,4 @@ function generateUI() {
 
 
 generateUI();
-
+refreshScreen();
