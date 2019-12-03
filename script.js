@@ -21,7 +21,7 @@ const symbols = [
   {disabled: true, icon: `x${S_SQR}`, action: "square"},
   {disabled: true, icon: `${S_SUPONE}${S_FRACTION}x`, action: "inverse"},
   {disabled: true, icon: "CE", action: "cleare"},
-  {disabled: true, icon: "C", action: "clear"},
+  {disabled: false, icon: "C", action: "clear"},
   {disabled: true, icon: "B", action: "backspace"},
   {disabled: true, icon: `${S_DIVIDE}`, action: "divide"},
   {disabled: false, icon: "7", action: '7'},
@@ -68,6 +68,8 @@ const inverseString = (x) => `1${S_FRACTION} ${x}`;
 const negate = (x) => -x;
 const negateString = (x) => `negate( ${x} )`;
 
+
+
 const operate = (operand, a, b) => {
   // check parameters
   if (isNaN(a) || (isNaN(b) && b !== undefined)) throw "Parameter is not a number!";
@@ -87,31 +89,12 @@ const operate = (operand, a, b) => {
 
 let buffer = [0];
 let equationStack = [];
-let lastOperation = '';
+let currentOperation = '';
 let result = 0;
+let auxResult = '';
 
 let replaceBufferOnNextNumber = false;
 
-/**
- * convert an equation stack list into a display string
- */
-const EStoString = (stack) => {
-  let indexValue1 = 0;
-  let indexValue2 = 0;
-  let current = 0;
-  if (stack) {
-    let result = parseFloat(stack[0]);
-  } else return
-
-  stack.forEach(op=>{
-    // select the current value
-    let value1, value2;
-    if (!isNaN(op)) {
-      
-    } 
-  });
-  return;
-}
 
 const addToBuffer = (input) => {
   // ToDo: check if input & output is a finite number
@@ -125,25 +108,40 @@ const addToBuffer = (input) => {
   }
 }
 
+const clear = () => {
+  buffer = [0];
+  equationStack = [];
+  currentOperation = '';
+  result = 0;
+  auxResult = '';
+  refreshScreen();
+}
 
 const refreshScreen = () => {
   let result = buffer.join('')
   if (result.length > 10) {
     result = parseFloat(result).toExponential(5)
   }
-  output.innerText = result
+  output.innerText = result;
+  outputAux.innerText = auxResult;
 }
 
 const handleInput = (e) => {
   let action = e.target.dataset.action;
-  addToBuffer(action)
+  // clear screen
+  if (action === 'clear') clear();
+  // numerical action
+  if (!isNaN(action)) addToBuffer(action);
+
   refreshScreen();
+  e.target.blur();
 }
 
 
 const container = document.getElementById('container');
 const calculator = document.createElement('div');
 const display = document.createElement('div');
+const outputAux = document.createElement('div');
 const output = document.createElement('div');
 function generateUI() {
   calculator.classList.add('calc-container');
@@ -151,6 +149,9 @@ function generateUI() {
 
   display.classList.add('calc-display');
   calculator.appendChild(display);
+
+  outputAux.classList.add('calc-output-aux');
+  display.appendChild(outputAux);
 
   output.classList.add('calc-output');
   display.appendChild(output);
