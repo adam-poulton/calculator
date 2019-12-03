@@ -35,7 +35,7 @@ const symbols = [
   {disabled: false, icon: "1", action: '1'},
   {disabled: false, icon: "2", action: '2'},
   {disabled: false, icon: "3", action: '3'},
-  {disabled: true, icon: `${S_PLUS}`, action: "plus"},
+  {disabled: true, icon: `${S_PLUS}`, action: "add"},
   {disabled: true, icon: `${S_SUPPLUS}${S_FRACTION}${S_NEGATIVE}`, action: "negate"},
   {disabled: false, icon: "0", action: '0'},
   {disabled: true, icon: ".", action: "decimal"},
@@ -117,6 +117,10 @@ const clear = () => {
   refreshScreen();
 }
 
+const pushBuffer = () => {
+  equationStack.push(buffer.join(''))
+}
+
 const refreshScreen = () => {
   let result = buffer.join('')
   if (result.length > 10) {
@@ -130,6 +134,11 @@ const handleInput = (e) => {
   let action = e.target.dataset.action;
   // clear screen
   if (action === 'clear') clear();
+  // addition
+  if (action === 'add') {
+    currentOperation = 'add';
+    replaceBufferOnNextNumber = true;
+  }
   // numerical action
   if (!isNaN(action)) addToBuffer(action);
 
