@@ -45,58 +45,99 @@ const symbols = [
 const peek = (aList) => aList.length > 0 ? aList[aList.length-1] : undefined;
 
 const multiply = (x, y) => x * y;
+const multiplyString = (x) => `${x} ${S_MULTIPLY}`;
 
 const add = (x, y) => x + y;
+const addString = (x) => `${x} ${S_PLUS}`;
 
 const subtract = (x, y) => x - y;
+const subtractString = (x) => `${x} ${S_SUBTRACT}`;
 
 const divide = (x, y) => x / y;
+const divideString = (x) => `${x} ${S_DIVIDE}`;
 
 const square = (x) => x * x; 
+const sqruareString = (x) => `sqr( ${x} )`;
 
-const root = (x) => Math.sqrt(x);
+const sqrt = (x) => Math.sqrt(x);
+const sqrtString = (x) => `sqrt( ${x} )`;
 
 const inverse = (x) => 1 / x;
+const inverseString = (x) => `1${S_FRACTION} ${x}`;
 
 const negate = (x) => -x;
+const negateString = (x) => `negate( ${x} )`;
 
 const operate = (operand, a, b) => {
-  if (isNaN(a) || isNaN(b)) throw "Parameter is not a number!";
-  const x = parseInt(a);
-  const y = parseInt(b);
-  if (operand === "*") return multiply (x, y);
-  if (operand === "/") return divide (x, y);
-  if (operand === "+") return add (x, y);
-  if (operand === "-") return subtract (x, y);
+  // check parameters
+  if (isNaN(a) || (isNaN(b) && b !== undefined)) throw "Parameter is not a number!";
+
+  const x = parseFloat(a);
+  const y = parseFloat(b);
+
+  if (operand === "multiply") return multiply (x, y);
+  if (operand === "divide") return divide (x, y);
+  if (operand === "add") return add (x, y);
+  if (operand === "subtract") return subtract (x, y);
+  if (operand === "negate") return negate(x);
+  if (operand === "inverse") return inverse(x);
+  if (operand === "square") return square(x);
+  if (operand === "sqrt") return sqrt(x);
 }
 
 let buffer = [0];
+let equationStack = [];
+let lastOperation = '';
+let result = 0;
+
+let replaceBufferOnNextNumber = false;
+
+/**
+ * convert an equation stack list into a display string
+ */
+const EStoString = (stack) => {
+  let indexValue1 = 0;
+  let indexValue2 = 0;
+  let current = 0;
+  if (stack) {
+    let result = parseFloat(stack[0]);
+  } else return
+
+  stack.forEach(op=>{
+    // select the current value
+    let value1, value2;
+    if (!isNaN(op)) {
+      
+    } 
+  });
+  return;
+}
 
 const addToBuffer = (input) => {
   // ToDo: check if input & output is a finite number
-  if (isNaN(input)) {
-    // handle operands
-  } else {
-    //handle numbers
-    // build numbers when buffer is empty or already contains numbers
-    if (buffer.length == 0 || !isNaN(peek(buffer))){
-      buffer.push(input)
-      if (buffer[0] == 0) buffer.shift()
-    }
+
+  // build numbers when buffer is empty or already contains numbers
+  if (buffer.length == 0 || !isNaN(peek(buffer))){
+    buffer.push(input)
+    if (buffer[0] == 0) buffer.shift()
+  } else if(replaceBufferOnNextNumber) {
+    buffer = [input]
   }
-  refreshScreen();
 }
+
 
 const refreshScreen = () => {
   let result = buffer.join('')
   if (result.length > 10) {
-    result = parseInt(result).toExponential(5)
+    result = parseFloat(result).toExponential(5)
   }
   output.innerText = result
 }
 
 const handleInput = (e) => {
-  addToBuffer(e.target.dataset.action)
+  let action = e.target.dataset.action;
+  addToBuffer(action)
+  refreshScreen();
 }
 
 
